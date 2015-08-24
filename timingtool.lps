@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="23">
+      <Unit0>
+        <Filename Value="timingtool.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="16" Y="18"/>
+        <UsageCount Value="211"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="mainformu.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SuTimingForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="mainformu"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="56"/>
+        <CursorPos X="4" Y="67"/>
+        <UsageCount Value="211"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="ltegraph.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="LteGraph"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="298"/>
+        <CursorPos X="47" Y="304"/>
+        <UsageCount Value="211"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="ltetimingreader.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="LteTimingReader"/>
+        <TopLine Value="13"/>
+        <CursorPos X="23" Y="24"/>
+        <UsageCount Value="217"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="unit1.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="mousetool.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="mousetool"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="61"/>
+        <CursorPos X="41" Y="58"/>
+        <UsageCount Value="238"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="helpformu.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SuTimingHelpForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="helpformu"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="5"/>
+        <CursorPos X="28" Y="17"/>
+        <UsageCount Value="215"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="settingsu.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SuTmingOptionForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="settingsu"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="34"/>
+        <CursorPos X="21" Y="9"/>
+        <UsageCount Value="215"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\superobject\superobject.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="3186"/>
+        <CursorPos X="22" Y="3196"/>
+        <UsageCount Value="327"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="sutimingloadingformu.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SuTimingLoadingForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="sutimingloadingformu"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="6"/>
+        <CursorPos X="50" Y="10"/>
+        <UsageCount Value="326"/>
+        <Loaded Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="logparser_su.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="logparser_su"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="4"/>
+        <CursorPos X="31" Y="15"/>
+        <UsageCount Value="306"/>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="klib.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="KLib"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="16"/>
+        <CursorPos X="18" Y="30"/>
+        <UsageCount Value="306"/>
+        <Loaded Value="True"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="d:\lazarus1.4\fpc\2.6.4\source\packages\fcl-image\src\fpcanvas.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="91"/>
+        <CursorPos X="17" Y="101"/>
+        <UsageCount Value="38"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="D:\lazarus1.4\lcl\graphics.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1144"/>
+        <CursorPos X="15" Y="1162"/>
+        <UsageCount Value="68"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="D:\lazarus1.4\fpc\2.6.4\source\rtl\objpas\fgl.pp"/>
+        <UnitName Value="fgl"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="53" Y="16"/>
+        <UsageCount Value="82"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="D:\lazarus1.4\fpc\2.6.4\source\rtl\inc\systemh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="257"/>
+        <CursorPos X="3" Y="307"/>
+        <UsageCount Value="85"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="D:\lazarus1.4\fpc\2.6.4\source\rtl\objpas\sysutils\datih.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="109"/>
+        <CursorPos X="19" Y="120"/>
+        <UsageCount Value="85"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="timinggraph.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TimingGraph"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="289"/>
+        <CursorPos X="74" Y="301"/>
+        <UsageCount Value="263"/>
+        <Loaded Value="True"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="D:\lazarus1.4\fpc\2.6.4\source\rtl\objpas\sysutils\dati.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="322"/>
+        <CursorPos X="3" Y="324"/>
+        <UsageCount Value="85"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="D:\lazarus1.4\fpc\2.6.4\source\rtl\objpas\math.pp"/>
+        <UnitName Value="math"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="182"/>
+        <CursorPos X="10" Y="193"/>
+        <UsageCount Value="85"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="D:\lazarus1.4\fpc\2.6.4\source\rtl\objpas\sysutils\sysstrh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="67"/>
+        <CursorPos X="16" Y="78"/>
+        <UsageCount Value="83"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="D:\lazarus1.4\fpc\2.6.4\source\rtl\objpas\sysutils\sysstr.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="166"/>
+        <CursorPos X="3" Y="168"/>
+        <UsageCount Value="83"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="tdsgraph.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TdsGraph"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="151"/>
+        <CursorPos X="10" Y="160"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit22>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="1091" Column="30" TopLine="1080"/>
+      </Position1>
+      <Position2>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="438" Column="103" TopLine="427"/>
+      </Position2>
+      <Position3>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="439" Column="83" TopLine="429"/>
+      </Position3>
+      <Position4>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="438" Column="59" TopLine="430"/>
+      </Position4>
+      <Position5>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="439" TopLine="430"/>
+      </Position5>
+      <Position6>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="441" Column="25" TopLine="431"/>
+      </Position6>
+      <Position7>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="235" Column="14" TopLine="228"/>
+      </Position7>
+      <Position8>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="1274" Column="45" TopLine="1266"/>
+      </Position8>
+      <Position9>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="439" Column="81" TopLine="429"/>
+      </Position9>
+      <Position10>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="445" Column="26" TopLine="436"/>
+      </Position10>
+      <Position11>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="446" Column="45" TopLine="436"/>
+      </Position11>
+      <Position12>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="447" Column="5" TopLine="437"/>
+      </Position12>
+      <Position13>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="443" Column="23" TopLine="379"/>
+      </Position13>
+      <Position14>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="334" Column="70" TopLine="315"/>
+      </Position14>
+      <Position15>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="337" Column="70" TopLine="329"/>
+      </Position15>
+      <Position16>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="458" Column="24" TopLine="466"/>
+      </Position16>
+      <Position17>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="340" Column="73" TopLine="322"/>
+      </Position17>
+      <Position18>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="461" Column="34" TopLine="392"/>
+      </Position18>
+      <Position19>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="492" Column="20" TopLine="476"/>
+      </Position19>
+      <Position20>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="995" Column="3" TopLine="992"/>
+      </Position20>
+      <Position21>
+        <Filename Value="timinggraph.pas"/>
+        <Caret Line="984" Column="19" TopLine="983"/>
+      </Position21>
+      <Position22>
+        <Filename Value="tdsgraph.pas"/>
+        <Caret Line="3"/>
+      </Position22>
+      <Position23>
+        <Filename Value="tdsgraph.pas"/>
+        <Caret Line="342" TopLine="321"/>
+      </Position23>
+      <Position24>
+        <Filename Value="tdsgraph.pas"/>
+        <Caret Line="37" Column="48" TopLine="25"/>
+      </Position24>
+      <Position25>
+        <Filename Value="tdsgraph.pas"/>
+        <Caret Line="100" Column="73" TopLine="85"/>
+      </Position25>
+      <Position26>
+        <Filename Value="tdsgraph.pas"/>
+        <Caret Line="62" Column="11" TopLine="50"/>
+      </Position26>
+      <Position27>
+        <Filename Value="ltetimingreader.pas"/>
+        <Caret Line="74" Column="40" TopLine="59"/>
+      </Position27>
+      <Position28>
+        <Filename Value="ltetimingreader.pas"/>
+        <Caret Line="19" Column="15" TopLine="8"/>
+      </Position28>
+      <Position29>
+        <Filename Value="logparser_su.pas"/>
+        <Caret Line="72" Column="50" TopLine="5"/>
+      </Position29>
+      <Position30>
+        <Filename Value="tdsgraph.pas"/>
+        <Caret Line="125" Column="45" TopLine="117"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

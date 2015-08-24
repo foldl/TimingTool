@@ -1,0 +1,47 @@
+object SuTimingLoadingForm: TSuTimingLoadingForm
+  Left = 677
+  Height = 140
+  Top = 213
+  Width = 158
+  BorderStyle = bsNone
+  Caption = 'Loading'
+  ClientHeight = 140
+  ClientWidth = 158
+  Color = clSkyBlue
+  FormStyle = fsStayOnTop
+  Position = poMainFormCenter
+  LCLVersion = '1.4.0.4'
+  object Label1: TLabel
+    Left = 8
+    Height = 54
+    Top = 8
+    Width = 144
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Label1'
+    Font.Height = -40
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 8
+    Height = 22
+    Top = 80
+    Width = 144
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Label2'
+    Font.Height = -13
+    ParentColor = False
+    ParentFont = False
+  end
+  object Button1: TButton
+    Left = 40
+    Height = 25
+    Top = 112
+    Width = 75
+    Caption = 'Cancel'
+    OnClick = Button1Click
+    TabOrder = 0
+  end
+end

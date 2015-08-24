@@ -1,0 +1,14 @@
+*.exe
+*.dll
+*.obj
+*.mdb
+*.o
+*.ppu
+log*.txt
+backup/
+lib/
+release/
+*.swp
+*.~
+~
+
