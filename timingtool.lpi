@@ -77,7 +77,6 @@
         <ComponentName Value="SuTimingHelpForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="helpformu"/>
       </Unit6>
       <Unit7>
         <Filename Value="settingsu.pas"/>
@@ -85,7 +84,6 @@
         <ComponentName Value="SuTmingOptionForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="settingsu"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\superobject\superobject.pas"/>
@@ -117,7 +115,6 @@
       <Unit13>
         <Filename Value="tdsgraph.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="TdsGraph"/>
       </Unit13>
       <Unit14>
         <Filename Value="ex_logparser_tds.pas"/>
@@ -130,7 +127,6 @@
         <ComponentName Value="QuickLoadForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="quickloadformu"/>
       </Unit15>
       <Unit16>
         <Filename Value="ex_sleep_check.pas"/>

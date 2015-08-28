@@ -341,10 +341,11 @@ begin
     FSleepEvent.Caption := 'Sleep';
   end;
   Graph.AddEventList(Graph.FSleepEvent);
-  AddParser('^[0-9\.]+\s*\([0-9]+\)\s*\{L: ([0-9a-fA-FxX]+)/([0-9])/([0-9]+)\} +: +\[HW\] ([^ ]+),',
-            TReParserCB(@HWISRMatched));
+
   AddParser('^[0-9\.]+\s*\([0-9]+\)\s*\{L: ([0-9a-fA-FxX]+)/([0-9])/([0-9]+)\} +: +\[HW\] tsg([0-9])_time_sig\[([0-9]+)\]',
             TReParserCB(@SigMatched));
+  AddParser('^[0-9\.]+\s*\([0-9]+\)\s*\{L: ([0-9a-fA-FxX]+)/([0-9])/([0-9]+)\} +: +\[HW\] ([^ ]+),',
+            TReParserCB(@HWISRMatched));
   AddParser('^[0-9\.]+\s*\([0-9]+\)\s*\{L: ([0-9a-fA-FxX]+)/([0-9])/([0-9]+)\} +: +PM_DEBUG_PAT=>  USER_EVENT: ENTER_CORE_SLEEP',
             TReParserCB(@EnterSleepMatched));
   AddParser('^[0-9\.]+\s*\([0-9]+\)\s*\{L: ([0-9a-fA-FxX]+)/([0-9])/([0-9]+)\} +: +PM_DEBUG_PAT=>  USER_EVENT: EXIT_CORE_SLEEP',

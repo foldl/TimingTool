@@ -70,6 +70,7 @@ begin
   FLteReader := TLteTimingReaderSu.Create;
   FLteReader.FrameList := ListBox1;
   FLteReader.PaintBox := PaintBox1;
+  //FLteReader.Graph.ShowEventLabel := False;
 
   FTdsReader := TTdsTimingReader.Create;
   with FTdsReader do
