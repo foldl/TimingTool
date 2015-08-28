@@ -18,6 +18,7 @@ type
     FDelta2: array of Integer;
     FPattern: string;
   end;
+  PBMContext = ^TBMContext;
 
 procedure FreeBMContext(C: TBMContext);
 procedure PrepareBMContext(pat: string; var Context: TBMContext);
@@ -65,13 +66,10 @@ begin
     Result := Result shl 4;
     if HexStr[i] in ['0'..'9'] then
       Result := Result + DWord(byte(HexStr[i]) - 48)
+    else if HexStr[i] in ['A'..'F'] then
+      Result := Result + DWord(byte(HexStr[i]) - Ord('a') + 10)
     else
-    if HexStr[i] in ['A'..'F'] then
-      Result := Result + DWord(byte(HexStr[i]) - 55)
-    else
-    begin
       Break;
-    end;
   end;
 end;
 
@@ -230,7 +228,7 @@ end;
 
 function FormatFreq(F: Integer): string;
 const
-  U: array [1..3] of string = ('K', 'M', 'G');
+  U: array [1..3] of string = ('k', 'M', 'G');
 var
   I: Integer;
   C: Integer = 0;

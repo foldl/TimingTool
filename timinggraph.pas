@@ -52,10 +52,12 @@ type
 
   TTimingEvent = record
     Time: TEventTime;
+    Duration: TEventTime;
     Tag: string;
     Color: TColor;
     Style: TEventStyle;
     X: Integer;
+    X1: Integer; // end of duration
   end;
   PTimingEvent = ^TTimingEvent;
 
@@ -99,6 +101,7 @@ type
   private
     FCaption: string;
     FColor: TColor;
+    FHasDuration: Boolean;
     FFrames: TEventFrameList;
     FMarkerSize: Integer;
     FPosition: Integer;
@@ -114,33 +117,41 @@ type
     function GetRemoteEvent(const FrameIndex, Index: Integer): PTimingEvent;
     procedure SetCaption(AValue: string);
     procedure SetColor(AValue: TColor);
+    procedure SetDrawDuration(AValue: Boolean);
     procedure SetFrameIndex(AValue: Integer);
     procedure SetMarkerSize(AValue: Integer);
     procedure SetSize(AValue: Integer);
     procedure SetStyle(AValue: TEventStyle);
     procedure SetTag(AValue: string);
 
-
     procedure NewFrame;
     property FrameCount: Integer read GetFrameCount;
     property FrameIndex: Integer read GetFrameIndex write SetFrameIndex;
-    property List: TFPList read GetList;
   protected
     procedure Notify;
-    function InsertEvent(P: PTimingEvent): Integer;
+    function GetTimeLabel(ATime: TEventTime): string; virtual;
+    procedure DrawSimple(ACanvas: TCanvas; ARect: TRect); virtual;
+    procedure DrawDuration(ACanvas: TCanvas; ARect: TRect); virtual;
+    function FindSimpleEvent(const X: Integer; const Tolerance: Integer = 5): Integer;
+    function FindDurationEvent(const X: Integer; const Tolerance: Integer = 5): Integer;
+    procedure LayoutSimple(const ARect: TRect); virtual;
+    procedure LayoutDuration(const ARect: TRect); virtual;
   public
     constructor Create;
     destructor Destroy; override;
 
+    function NewEvent: PTimingEvent;
+    function InsertEvent(P: PTimingEvent): Integer;
     function Add(const Event: TTimingEvent): Integer;
-
-    function FindEvent(const X: Integer; const Tolerance: Integer = 5): Integer;
-
-    procedure DrawRainbowLine(ACanvas: TCanvas; const AX, AY, AHeight: Integer);
-    procedure Layout(const ARect: TRect); virtual;
-    procedure Draw(ACanvas: TCanvas; ARect: TRect); virtual;
     procedure ClearAll;
     procedure Clear;
+
+    function FindEvent(const X: Integer; const Tolerance: Integer = 5): Integer;
+    function FindFirstEvent(const X: Integer; const Tolerance: Integer = 5): Integer;
+
+    procedure DrawRainbowLine(ACanvas: TCanvas; const AX, AY, AHeight: Integer);
+    procedure Layout(const ARect: TRect);
+    procedure Draw(ACanvas: TCanvas; ARect: TRect); virtual;
 
     property Tag: string read FTag write SetTag;
     property Caption: string read FCaption write SetCaption;
@@ -149,16 +160,20 @@ type
     property Size: Integer read FSize write SetSize;
     property Style: TEventStyle read FStyle write SetStyle;
     property MarkerSize: Integer read FMarkerSize write SetMarkerSize;
+    property HasDuration: Boolean read FHasDuration write SetDrawDuration;
 
     property Graph: TTimingGraph read FGraph;
     property Count: Integer read GetCount;
-    property Event[const Index: Integer]: PTimingEvent read GetEvent;
+    property Event[const Index: Integer]: PTimingEvent read GetEvent; default;
     property RemoteEvent[const AFrameIndex, Index: Integer]: PTimingEvent read GetRemoteEvent;
   end;
 
   TLteEventListList = specialize TFPGObjectList<TEventList>;
 
   TToolMeasure = class;
+
+  TEventListForEach = procedure (EList: TEventList; P: PTimingEvent; Param: Pointer);
+  TEventListForEachMethod = procedure (EList: TEventList; P: PTimingEvent; Param: Pointer) of object;
 
   { TTimingGraph }
 
@@ -197,6 +212,12 @@ type
     FFrameIndex: Integer;
     FTimeType: TEventTimeType;
   private
+    type
+    TForEachParam = record
+      Fun: TEventListForEach;
+      Param: Pointer;
+    end;
+    PForEachParam = ^TForEachParam;
     procedure SetPaintBox(AValue: TPaintBox);
 
     procedure DrawBackground;
@@ -205,8 +226,15 @@ type
 
     procedure EventListChanged;
 
+    function FindEventList(const X, Y: Integer): TEventList;
     function FindFirstEvent(const X, Y: Integer; out AList: TEventList; out AFrame: Integer): Integer;
     function FindEvent(const X, Y: Integer; out AList: TEventList; out AFrame: Integer): Integer;
+
+    procedure ForEachCB(AList: TEventList; P: PTimingEvent; Param: PForEachParam);
+    procedure ForEach(const X, Y: Integer;  const AFun: TEventListForEach; Param: Pointer;
+      const Tolerance: Integer = 5); overload;
+    procedure ForEach(const X, Y: Integer;  const AFun: TEventListForEachMethod; Param: Pointer;
+      const Tolerance: Integer = 5);
 
     procedure PaintBoxMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -239,12 +267,14 @@ type
     function FormatSecTimeShort(const T: Double): string; virtual;
     procedure FormatSecTimeLong(const T: Double; L: TStrings); virtual;
   private
+    FEventMaxHeight: Integer;
     function GetEventList(const Index: Integer): TEventList;
     function GetEventListCount: Integer;
     function GetFrameId: Integer;
     function GetPanMin: TEventTime;
     procedure PaintBoxResize(Sender: TObject);
     procedure SetBackgroundColor(AValue: TColor);
+    procedure SetEventHeight(AValue: Integer);
     procedure SetFrameId(AValue: Integer);
     procedure SetFrameLength(AValue: TEventTime);
     procedure SetGridColor(AValue: TColor);
@@ -269,7 +299,7 @@ type
     function AddEventList(AList: TEventList): Integer;
 
     procedure BeginUpdate;
-    procedure EndUpdate;
+    procedure EndUpdate(const ARedraw: Boolean = True);
 
     procedure Clear;
     procedure NewFrame;
@@ -288,6 +318,7 @@ type
     property MarginBottom: Integer read FMarginBottom write SetMarginBottom;
     property MarginLeft: Integer read FMarginLeft write SetMarginLeft;
     property MarginRight: Integer read FMarginRight write SetMarginRight;
+    property EventMaxHeight: Integer read FEventMaxHeight write SetEventHeight;
 
     property MarginEventList: Integer read FMarginEventList write SetMarginEventList;
 
@@ -585,6 +616,13 @@ begin
   Notify;
 end;
 
+procedure TEventList.SetDrawDuration(AValue: Boolean);
+begin
+  if FHasDuration = AValue then Exit;
+  FHasDuration := AValue;
+  Notify;
+end;
+
 procedure TEventList.SetFrameIndex(AValue: Integer);
 begin
   if FFrames.FrameIndex = AValue then Exit;
@@ -702,6 +740,11 @@ begin
   Notify;
 end;
 
+function TEventList.GetTimeLabel(ATime: TEventTime): string;
+begin
+  Result := FGraph.FormatTimeShort(ATime);
+end;
+
 constructor TEventList.Create;
 begin
   FSize := 30;
@@ -713,6 +756,13 @@ destructor TEventList.Destroy;
 begin
   FFrames.Free;
   inherited Destroy;
+end;
+
+function TEventList.NewEvent: PTimingEvent;
+begin
+  New(Result);
+  Result^.Color := FColor;
+  Result^.Style := FStyle;
 end;
 
 function TEventList.Add(const Event: TTimingEvent): Integer;
@@ -727,45 +777,30 @@ end;
 
 function TEventList.FindEvent(const X: Integer; const Tolerance: Integer
   ): Integer;
+begin
+  if FHasDuration then Result := FindDurationEvent(X, Tolerance)
+  else Result := FindSimpleEvent(X, Tolerance);
+end;
+
+function TEventList.FindFirstEvent(const X: Integer; const Tolerance: Integer
+  ): Integer;
 var
-  P: PTimingEvent;
-  I, J, M: Integer;
-  C: Integer;
   FList: TFPList;
 begin
   FList := FFrames.Frame;
-  Result := -1;
-  I := 0;
-  J := FList.Count - 1;
-  while I <= J do
+  Result := FindEvent(X, Tolerance);
+  if (Result > 0) and (not FHasDuration) then
   begin
-    M := (I + J) div 2;
-    P := FList[M];
-
-    if P^.X = X then
+    while Result > 0 do
     begin
-      Result := M;
-      Exit;
-    end
-    else if P^.X > X then
-      J := M - 1
-    else
-      I := M + 1
-  end;
-  M := I;
-  I := Max(0, Min(M, J));
-  J := Min(FList.Count - 1, Max(M, J));
-  C := X;
-  for M := I to J do
-  begin
-    P := FList[M];
-    if Abs(P^.X - X) < C then
-    begin
-      Result := M;
-      C := Abs(P^.X - X);
+      Dec(Result);
+      if Abs(PTimingEvent(FList[Result])^.X - X) > Tolerance then
+      begin
+        Break;
+      end;
     end;
+    Inc(Result);
   end;
-  if C >= Tolerance then Result := -1;
 end;
 
 procedure TEventList.DrawRainbowLine(ACanvas: TCanvas; const AX, AY,
@@ -790,6 +825,12 @@ begin
 end;
 
 procedure TEventList.Layout(const ARect: TRect);
+begin
+  if FHasDuration then LayoutDuration(ARect)
+  else LayoutSimple(ARect);
+end;
+
+procedure TEventList.LayoutSimple(const ARect: TRect);
 var
   I, N, Q: Integer;
   P: PTimingEvent;
@@ -800,8 +841,8 @@ begin
 
   for Q := N - 1 to N + 1 do
   begin
-    Offset := FGraph.TimeAdd(Offset, FGraph.FrameLength);
     if (Q < 0) or (Q >= FrameCount) then Continue;
+    Offset := FGraph.TimeAdd(Offset, FGraph.FrameLength);
     FFrames.FrameIndex := Q;
 
     for I := 0 to Count - 1 do
@@ -813,7 +854,40 @@ begin
   FFrames.FrameIndex := N;
 end;
 
-procedure TEventList.Draw(ACanvas: TCanvas; ARect: TRect
+procedure TEventList.LayoutDuration(const ARect: TRect);
+var
+  I, N, Q: Integer;
+  P: PTimingEvent;
+  Offset: TEventTime;
+  T: TEventTime;
+begin
+  N := FFrames.FrameIndex;
+  Offset := FGraph.TimeNeg(FGraph.TimeAdd(FGraph.FrameLength, FGraph.FrameLength));
+
+  for Q := N - 1 to N + 1 do
+  begin
+    if (Q < 0) or (Q >= FrameCount) then Continue;
+    Offset := FGraph.TimeAdd(Offset, FGraph.FrameLength);
+    FFrames.FrameIndex := Q;
+
+    for I := 0 to Count - 1 do
+    begin
+      P := PTimingEvent(FFrames.FList[I]);
+      T := FGraph.TimeAdd(P^.Time, Offset);
+      P^.X  := FGraph.TimeToScreen(T);
+      P^.X1 := FGraph.TimeToScreen(FGraph.TimeAdd(P^.Duration, T));
+    end;
+  end;
+  FFrames.FrameIndex := N;
+end;
+
+procedure TEventList.Draw(ACanvas: TCanvas; ARect: TRect);
+begin
+  if FHasDuration then DrawDuration(ACanvas, ARect)
+  else DrawSimple(ACanvas, ARect);
+end;
+
+procedure TEventList.DrawSimple(ACanvas: TCanvas; ARect: TRect
   );
 var
   S: TSize;
@@ -861,7 +935,7 @@ begin
         end;
         if FGraph.ShowEventTiming then
         begin
-          G := FGraph.FormatTimeShort(P^.Time);
+          G := GetTimeLabel(P^.Time); ;
           S := C.TextExtent(G);
           if X - LastX > S.cx then
             C.TextOut(X - S.cx div 2, Y + Size + 2, G);
@@ -873,6 +947,127 @@ begin
     end;
   end;
   FFrames.FrameIndex := N;
+end;
+
+procedure TEventList.DrawDuration(ACanvas: TCanvas; ARect: TRect);
+var
+  S: TSize;
+  C: TCanvas;
+  X, X0, X1, Y, I, Q, N: Integer;
+  P: PTimingEvent;
+  LastX: Integer = -1;
+  G: string;
+begin
+  C := ACanvas;
+  N := FrameIndex;
+  for Q := N - 1 to N + 1 do
+  begin
+    if (Q < 0) or (Q >= FrameCount) then Continue;
+    FFrames.FrameIndex := Q;
+
+    for I := 0 to Count - 1 do
+    begin
+      P := PTimingEvent(FFrames.FList[I]);
+      X0 := Max(P^.X, ARect.Left);
+      X1 := Min(Max(P^.X + FMarkerSize, P^.X1), ARect.Right);
+
+      if X1 < X0 then Continue;
+
+      X := (X0 + X1) div 2;
+      C.Brush.Color := P^.Color;
+      case P^.Style of
+        psDot, psDash, psDashDot, psDashDotDot: C.Brush.Style := bsCross;
+        else C.Brush.Style := bsSolid;
+      end;
+      //C.Pen.Color := P^.Color;
+      Y := Position;
+      C.FillRect(X0, Y, X1, Y + Self.Size);
+      C.Brush.Style := bsClear;
+
+      // draw label
+      if FGraph.ShowEventLabel then
+      begin
+        S := C.TextExtent(P^.Tag);
+        if X - LastX > S.cx then
+          C.TextOut(X - S.cx div 2, Y - 2 - S.cy, P^.Tag);;
+      end;
+      if FGraph.ShowEventTiming then
+      begin
+        G := GetTimeLabel(P^.Time); ;
+        S := C.TextExtent(G);
+        if X - LastX > S.cx then
+          C.TextOut(X - S.cx div 2, Y + Size + 2, G);
+      end;
+
+      LastX := X;
+    end;
+  end;
+  FFrames.FrameIndex := N;
+end;
+
+function TEventList.FindSimpleEvent(const X: Integer; const Tolerance: Integer
+  ): Integer;
+var
+  P: PTimingEvent;
+  I, J, M: Integer;
+  C: Integer;
+  FList: TFPList;
+begin
+  FList := FFrames.Frame;
+  Result := -1;
+  I := 0;
+  J := FList.Count - 1;
+  while I <= J do
+  begin
+    M := (I + J) div 2;
+    P := FList[M];
+
+    if P^.X = X then
+    begin
+      Result := M;
+      Exit;
+    end
+    else if P^.X > X then
+      J := M - 1
+    else
+      I := M + 1
+  end;
+  M := I;
+  I := Max(0, Min(M, J));
+  J := Min(FList.Count - 1, Max(M, J));
+  C := X;
+  for M := I to J do
+  begin
+    P := FList[M];
+    if Abs(P^.X - X) < C then
+    begin
+      Result := M;
+      C := Abs(P^.X - X);
+    end;
+  end;
+  if C >= Tolerance then Result := -1;
+end;
+
+function TEventList.FindDurationEvent(const X: Integer; const Tolerance: Integer
+  ): Integer;
+var
+  P: PTimingEvent;
+  I: Integer;
+  FList: TFPList;
+begin
+  // TODO: optimize
+  FList := FFrames.Frame;
+  Result := -1;
+  for I := 0 to FList.Count - 1 do
+  begin
+    P := FList[I];
+
+    if InRange(X, P^.X - Tolerance, P^.X1 + Tolerance) then
+    begin
+      Result := I;
+      Exit;
+    end
+  end;
 end;
 
 procedure TEventList.NewFrame;
@@ -924,6 +1119,10 @@ begin
     Brush.Style := bsSolid;
     Brush.Color := FBackgroundColor;
     FillRect(0, 0, FDoubleBuffer.Width, FDoubleBuffer.Height);
+
+    Pen.Color := FGridColor;
+    Pen.Width := 2;
+    Rectangle(FGridRect);
   end;
   DoDrawBackground;
 end;
@@ -940,6 +1139,7 @@ begin
 
   H := (FGridRect.Bottom - FGridRect.Top) div FEvents.Count;
   if H < FMarginEventList then Exit;
+  H := Min(H, FEventMaxHeight);
 
   P := FGridRect.Bottom - FMarginEventList div 2;
 
@@ -1011,12 +1211,26 @@ begin
   Redraw;
 end;
 
+function TTimingGraph.FindEventList(const X, Y: Integer): TEventList;
+var
+  E: TEventList;
+begin
+  Result := nil;
+  for E in FEvents do
+  begin
+    if InRange(Y, E.Position, E.Position + E.Size) then
+    begin
+      Result := E;
+      Break;
+    end;
+  end;
+end;
+
 function TTimingGraph.FindFirstEvent(const X, Y: Integer; out
   AList: TEventList; out AFrame: Integer): Integer;
 var
   E: TEventList;
   I, J, K: Integer;
-  C: Integer;
 begin
   Result := -1;
   for E in FEvents do
@@ -1028,19 +1242,9 @@ begin
       if (J < 0) or (J >= E.FrameCount) then Continue;
       E.FFrames.FrameIndex := J;
       if E.Count < 1 then Continue;
-      if E.Event[0]^.X > X + RANGE then Break;
-      if E.Event[E.Count - 1]^.X < X - RANGE then Continue;
 
-      I := E.FindEvent(X, RANGE);
+      I := E.FindFirstEvent(X, RANGE);
       if I < 0 then Continue;
-      C := Abs(E.Event[I]^.X - X);
-      Dec(I);
-      while I >= 0 do
-      begin
-        if Abs(E.Event[I]^.X - X) > C then Break;
-        Dec(I);
-      end;
-      Inc(I);
 
       AList := E;
       Result := I;
@@ -1076,37 +1280,81 @@ begin
   AList.FFrames.FrameIndex := J;
 end;
 
+procedure TTimingGraph.ForEachCB(AList: TEventList; P: PTimingEvent; Param: PForEachParam);
+begin
+  Param^.Fun(AList, P, Param^.Param);
+end;
+
+procedure TTimingGraph.ForEach(const X, Y: Integer; const AFun: TEventListForEach;
+  Param: Pointer; const Tolerance: Integer);
+var
+  T: TForEachParam;
+begin
+  T.Fun := AFun;
+  T.Param := Param;
+  ForEach(X, Y, TEventListForEachMethod(@ForEachCB), @T, Tolerance);
+end;
+
+procedure TTimingGraph.ForEach(const X, Y: Integer;
+  const AFun: TEventListForEachMethod; Param: Pointer; const Tolerance: Integer
+  );
+var
+  I, J: Integer;
+  FList: TEventList;
+  P: PTimingEvent;
+  AFrame: Integer;
+begin
+  I := FindFirstEvent(X, Y, FList, AFrame);
+  if I < 0 then Exit;
+  BeginUpdate;
+  J := FList.FrameIndex;
+  FList.FrameIndex := AFrame;
+  if not FList.HasDuration then
+  begin
+    repeat
+      AFun(FList, FList.Event[I], Param);
+      Inc(I);
+    until (I >= FList.Count) or (Abs(FList[I]^.X - X) > Tolerance);
+  end
+  else begin
+    while I < FList.Count do
+    begin
+      P := FList[I];
+      if InRange(X, P^.X - Tolerance, P^.X1 + Tolerance) then
+        AFun(FList, P, Param);
+      Inc(I);
+    end;
+  end;
+  FList.FrameIndex := J;
+  EndUpdate(False);
+end;
+
+type
+  TParam = record
+    S: string;
+  end;
+  PParam = ^TParam;
+procedure OnEvent(E: TEventList; PE: PTimingEvent; Param: PParam);
+begin
+  Param^.S := Param^.S + Format('%s@%s'#10, [PE^.Tag, E.GetTimeLabel(PE^.Time)]);
+end;
+
 procedure TTimingGraph.PaintBoxMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 label
   SET_HINT;
 var
-  E: TEventList;
-  S: string = '';
   P: TPoint;
-  V: PTimingEvent;
-  I, J: Integer;
-  Frame: Integer;
+  AParam: TParam;
 begin
   P.x := X;
   P.y := Y;
   if not PtInRect(FGridRect, P) then goto SET_HINT;
 
-  I := FindFirstEvent(X, Y, E, Frame);
-  if I < 0 then goto SET_HINT;
+  ForEach(X, Y, TEventListForEach(@OnEvent), @AParam);
 
-  J := E.FFrames.FrameIndex;
-  E.FFrames.FrameIndex := Frame;
-  while I < E.Count do
-  begin
-    V := E.Event[I];
-    if Abs(V^.X - X) > RANGE then Break;
-    S := S + Format('%s@%d'#10, [V^.Tag, V^.Time.Sample]);
-    Inc(I);
-  end;
-  E.FFrames.FrameIndex := J;
 SET_HINT:
-  PaintBox.Hint := Copy(S, 1, Length(S) - 1);
+  PaintBox.Hint := Copy(AParam.S, 1, Length(AParam.S) - 1);
 end;
 
 procedure TTimingGraph.ToolWindowZoom(Sender: TObject; Rect: TRect);
@@ -1212,7 +1460,7 @@ begin
     ettSample:
       Result.Sample := A.Sample + B.Sample;
     ettMilliSec:
-      Result.TimeMS := A.Sample + B.Sample;
+      Result.TimeMS := A.TimeMS + B.TimeMS;
     ettTime:
       Result.Time := A.Time + B.Time;
   end;
@@ -1224,7 +1472,7 @@ begin
     ettSample:
       Result.Sample := A.Sample - B.Sample;
     ettMilliSec:
-      Result.TimeMS := A.Sample - B.Sample;
+      Result.TimeMS := A.TimeMS - B.TimeMS;
     ettTime:
       Result.Time := A.Time - B.Time;
   end;
@@ -1236,7 +1484,7 @@ begin
     ettSample:
       Result.Sample := -A.Sample;
     ettMilliSec:
-      Result.TimeMS := -A.Sample;
+      Result.TimeMS := -A.TimeMS;
     ettTime:
       Result.Time := -A.Time;
   end;
@@ -1248,7 +1496,7 @@ begin
     ettSample:
       Result.Sample := Abs(A.Sample);
     ettMilliSec:
-      Result.TimeMS := Abs(A.Sample);
+      Result.TimeMS := Abs(A.TimeMS);
     ettTime:
       Result.Time := Abs(A.Time);
   end;
@@ -1309,7 +1557,7 @@ begin
     ettSample:
       B.Sample := Round(A.Sample + Off * FSampleRate);
     ettMilliSec:
-      B.TimeMS := A.TimeMS - Off * 1000;
+      B.TimeMS := A.TimeMS + Off * 1000;
     ettTime:
       B.Time := A.Time + Off / SecsPerDay;
   end;
@@ -1322,7 +1570,7 @@ begin
     ettSample:
       Result := IntToStr(T.Sample);
     ettMilliSec:
-      Result := FormatSecTimeShort(T.TimeMS);
+      Result := FormatSecTimeShort(T.TimeMS / 1000);
     ettTime:
       Result := FormatSecTimeShort(T.Time * SecsPerDay);
   end;
@@ -1400,6 +1648,13 @@ procedure TTimingGraph.SetBackgroundColor(AValue: TColor);
 begin
   if FBackgroundColor = AValue then Exit;
   FBackgroundColor := AValue;
+  FullRedraw;
+end;
+
+procedure TTimingGraph.SetEventHeight(AValue: Integer);
+begin
+  if FEventMaxHeight = AValue then Exit;
+  FEventMaxHeight := AValue;
   FullRedraw;
 end;
 
@@ -1555,6 +1810,7 @@ begin
   FMarginTop := 30;
   FMarginBottom := 20;
   FMarginEventList := 20;
+  FEventMaxHeight := 50;
   FShowAll := True;
   FShowEventLabel := True;
   FShowEventTiming := True;
@@ -1598,7 +1854,7 @@ begin
   Inc(FUpdateCounter);
 end;
 
-procedure TTimingGraph.EndUpdate;
+procedure TTimingGraph.EndUpdate(const ARedraw: Boolean);
 begin
   Dec(FUpdateCounter);
   if FUpdateCounter <= 0 then
@@ -1607,7 +1863,7 @@ begin
     if FNeedFullRedraw then
       FullRedraw
     else
-      Redraw;
+      if ARedraw then Redraw;
   end;
 end;
 

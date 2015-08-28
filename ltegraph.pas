@@ -31,7 +31,8 @@ type
   { TLteEventList }
 
   TLteEventList = class(TEventList)
-  private
+  protected
+    function GetTimeLabel(ATime: TEventTime): string; override;
   public
     function Add(const ATTI: Byte; const ASample: Word;
       const ATag: string = ''; const AColor: TColor = clDefault): Integer; overload;
@@ -51,7 +52,7 @@ type
     FFrameType: TFrameType;
     FSpecialSubframeConfig: TSpecialSubframeConfig;
     FSubframeAlloc: TSubframeAlloc;
-    FYPixelsPerRE: Double;
+    //FYPixelsPerRE: Double;
     procedure SetBandwidthRB(AValue: TBandwidthRB);
     procedure SetCPMode(AValue: TCPMode);
     procedure SetFrameType(AValue: TFrameType);
@@ -111,6 +112,11 @@ uses
   KLib;
 
 { TLteEventList }
+
+function TLteEventList.GetTimeLabel(ATime: TEventTime): string;
+begin
+  Result := IntToStr(ATime.Sample mod TLteGraph(Graph).TTISamples);
+end;
 
 function TLteEventList.Add(const ATTI: Byte; const ASample: Word;
   const ATag: string; const AColor: TColor): Integer;
@@ -204,7 +210,6 @@ var
   TTI: Double;
   DX: Double;
   C: string;
-  E: TEventTime;
   function FormatTTI(const V: Integer): string;
   begin
     if FFrameType = ftFDD then
@@ -267,13 +272,6 @@ begin
   begin
     TextOut(10, 10, S);
     //TextOut(10, 20, Format('%d, %d', [FViewStartTime.TTI, FViewStartTime.Sample]));
-  end;
-
-  with FDoubleBuffer.DrawBuffer.Canvas do
-  begin
-    Pen.Color := FGridColor;
-    Pen.Width := 2;
-    Rectangle(FGridRect);
   end;
 
   if FShowRE then DrawRE;

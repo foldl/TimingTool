@@ -5,15 +5,18 @@ unit mainformu;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics,
-  Dialogs, Menus, StdCtrls, ExtCtrls, logparser_su, LteGraph, types;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
+  StdCtrls, ExtCtrls, ComCtrls, ex_logparser_su, LteGraph, types,
+  ex_logparser_tds, ex_sleep_check;
 
 type
 
-  { TSuTimingForm }
+  { TTimingForm }
 
-  TSuTimingForm = class(TForm)
+  TTimingForm = class(TForm)
     ListBox1: TListBox;
+    ListBox2: TListBox;
+    ListBox3: TListBox;
     MainMenu: TMainMenu;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
@@ -22,132 +25,158 @@ type
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
+    MenuItem8: TMenuItem;
     OpenDialog1: TOpenDialog;
+    PageControl1: TPageControl;
     PaintBox1: TPaintBox;
-    procedure Button1Click(Sender: TObject);
+    PaintBox2: TPaintBox;
+    PaintBox3: TPaintBox;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
     procedure FormCreate(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
-    procedure PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure PaintBox1MouseEnter(Sender: TObject);
-    procedure PaintBox1MouseLeave(Sender: TObject);
-    procedure PaintBox1MouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
-    procedure PaintBox1MouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure PaintBox1MouseWheel(Sender: TObject; Shift: TShiftState;
-      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    procedure MenuItem8Click(Sender: TObject);
   private
-    FReader: TLteTimingReaderSu;
+    FLteReader: TLteTimingReaderSu;
+    FTdsReader: TTdsTimingReader;
+    FSleepReader: TSleepTimingReader;
   public
     { public declarations }
   end;
 
 var
-  SuTimingForm: TSuTimingForm;
+  TimingForm: TTimingForm;
 
 implementation
 
 uses
-  helpformu, settingsu;
+  helpformu, settingsu, timingloadingformu, quickloadformu;
 
 {$R *.lfm}
 
-{ TSuTimingForm }
+const
+  PAGE_LTE = 0;
+  PAGE_TDS = 1;
+  PAGE_MS = 2;
 
-procedure TSuTimingForm.FormCreate(Sender: TObject);
+{ TTimingForm }
+
+procedure TTimingForm.FormCreate(Sender: TObject);
 begin
-  FReader := TLteTimingReaderSu.Create;
-  FReader.FrameList := ListBox1;
-  FReader.PaintBox := PaintBox1;
+  FLteReader := TLteTimingReaderSu.Create;
+  FLteReader.FrameList := ListBox1;
+  FLteReader.PaintBox := PaintBox1;
+
+  FTdsReader := TTdsTimingReader.Create;
+  with FTdsReader do
+  begin
+    FrameList := ListBox2;
+    PaintBox := PaintBox2;
+  end;
+
+  FSleepReader := TSleepTimingReader.Create;
+  with FSleepReader do
+  begin
+    FrameList := ListBox3;
+    PaintBox := PaintBox3;
+  end;
   // something is strange
  // PaintBox1.OnResize(PaintBox1);    PaintBox1.OnResize(PaintBox1);
 end;
 
-procedure TSuTimingForm.MenuItem2Click(Sender: TObject);
+procedure TTimingForm.MenuItem2Click(Sender: TObject);
 begin
   if OpenDialog1.Execute then
   begin
-    FReader.LoadFile(OpenDialog1.FileName);
-    Caption := 'Sulog LTE Timing - ' + OpenDialog1.FileName;
+    Caption := PageControl1.ActivePage.Caption + ' Timing - ' + OpenDialog1.FileName;
     Application.Title := Caption;
+    case PageControl1.PageIndex of
+      PAGE_LTE: TimingLoadingForm.LoadFile(OpenDialog1.FileName, FLteReader);
+      PAGE_TDS: TimingLoadingForm.LoadFile(OpenDialog1.FileName, FTdsReader);
+      PAGE_MS:  TimingLoadingForm.LoadFile(OpenDialog1.FileName, FSleepReader);
+    end;
   end;
 end;
 
-procedure TSuTimingForm.MenuItem4Click(Sender: TObject);
+procedure TTimingForm.MenuItem4Click(Sender: TObject);
 begin
-  FReader.Playing := not FReader.Playing;
+  case PageControl1.PageIndex of
+    PAGE_LTE:
+      begin
+        FLteReader.Playing := not FLteReader.Playing;
+        FTdsReader.Playing := False;
+        FSleepReader.Playing := False;
+      end;
+    PAGE_TDS:
+      begin
+        FLteReader.Playing := False;
+        FTdsReader.Playing := not FTdsReader.Playing;
+        FSleepReader.Playing := False;
+      end;
+    PAGE_MS:
+      begin
+        FLteReader.Playing := False;
+        FTdsReader.Playing := False;
+        FSleepReader.Playing := not FTdsReader.Playing;
+      end;
+  end;
 end;
 
-procedure TSuTimingForm.MenuItem6Click(Sender: TObject);
+procedure TTimingForm.MenuItem6Click(Sender: TObject);
 begin
-  FReader.Legend := SuTimingHelpForm.TreeView1;
-  SuTimingHelpForm.Show;
+  case PageControl1.PageIndex of
+    PAGE_LTE:
+      begin
+        FLteReader.Legend := SuTimingHelpForm.TreeView1;
+        SuTimingHelpForm.Show;
+      end;
+    PAGE_TDS:
+      begin
+        ;
+      end;
+    PAGE_MS:
+      begin
+        ;
+      end;
+  end;
 end;
 
-procedure TSuTimingForm.MenuItem7Click(Sender: TObject);
+procedure TTimingForm.MenuItem7Click(Sender: TObject);
 begin
+  if PageControl1.PageIndex <> PAGE_LTE then Exit;
+
   with SuTmingOptionForm do
   begin
-    RadioFrameType.ItemIndex := Ord(FReader.Graph.FrameType);
-    RadioCPType.ItemIndex := Ord(FReader.Graph.CPMode);
-    ComboFrameAlloc.ItemIndex := FReader.Graph.SubframeAlloc;
-    ComboSpecial.ItemIndex    := FReader.Graph.SpecialSubframeConfig;
-    EditBw.Text := IntToStr(FReader.Graph.BandwidthRB);
-    EditSampleRate.Text := IntToStr(FReader.Graph.SampleRate);
-    EditPlayInterval.Text := IntToStr(FReader.PlayInterval);
+    RadioFrameType.ItemIndex := Ord(FLteReader.Graph.FrameType);
+    RadioCPType.ItemIndex := Ord(FLteReader.Graph.CPMode);
+    ComboFrameAlloc.ItemIndex := FLteReader.Graph.SubframeAlloc;
+    ComboSpecial.ItemIndex    := FLteReader.Graph.SpecialSubframeConfig;
+    EditBw.Text := IntToStr(FLteReader.Graph.BandwidthRB);
+    EditSampleRate.Text := IntToStr(FLteReader.Graph.SampleRate);
+    EditPlayInterval.Text := IntToStr(FLteReader.PlayInterval);
     if ShowModal <> mrOK then Exit;
-    FReader.Graph.BandwidthRB := StrToIntDef(EditBw.Text, 110);
-    FReader.Graph.SampleRate := StrToIntDef(EditSampleRate.Text, 30720000);
-    FReader.PlayInterval := StrToIntDef(EditPlayInterval.Text, 30);
+    FLteReader.Graph.BandwidthRB := StrToIntDef(EditBw.Text, 110);
+    FLteReader.Graph.SampleRate := StrToIntDef(EditSampleRate.Text, 30720000);
+    FLteReader.PlayInterval := StrToIntDef(EditPlayInterval.Text, 30);
 
-    FReader.Graph.FrameType := TFrameType(RadioFrameType.ItemIndex);
-    FReader.Graph.CPMode    := TCPMode(RadioCPType.ItemIndex);
-    FReader.Graph.SubframeAlloc := ComboFrameAlloc.ItemIndex;
-    FReader.Graph.SpecialSubframeConfig := ComboSpecial.ItemIndex;
+    FLteReader.Graph.FrameType := TFrameType(RadioFrameType.ItemIndex);
+    FLteReader.Graph.CPMode    := TCPMode(RadioCPType.ItemIndex);
+    FLteReader.Graph.SubframeAlloc := ComboFrameAlloc.ItemIndex;
+    FLteReader.Graph.SpecialSubframeConfig := ComboSpecial.ItemIndex;
   end;
 end;
 
-procedure TSuTimingForm.PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TTimingForm.MenuItem8Click(Sender: TObject);
 begin
-
-end;
-
-procedure TSuTimingForm.PaintBox1MouseEnter(Sender: TObject);
-begin
-
-end;
-
-procedure TSuTimingForm.PaintBox1MouseLeave(Sender: TObject);
-begin
-
-end;
-
-procedure TSuTimingForm.PaintBox1MouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
-begin
-
-end;
-
-procedure TSuTimingForm.PaintBox1MouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-begin
-
-end;
-
-procedure TSuTimingForm.PaintBox1MouseWheel(Sender: TObject; Shift: TShiftState;
-  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-begin
-
-end;
-
-procedure TSuTimingForm.Button1Click(Sender: TObject);
-begin
-
+  case PageControl1.PageIndex of
+    PAGE_LTE: QuickLoadForm.QuickLoad(FLteReader);
+    PAGE_TDS: QuickLoadForm.QuickLoad(FTdsReader);
+    PAGE_MS: QuickLoadForm.QuickLoad(FSleepReader);
+  end;
 end;
 
 end.

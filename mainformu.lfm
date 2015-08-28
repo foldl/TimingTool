@@ -1,9 +1,9 @@
-object SuTimingForm: TSuTimingForm
-  Left = 3
+object TimingForm: TTimingForm
+  Left = 1
   Height = 338
-  Top = 103
+  Top = 223
   Width = 1350
-  Caption = 'Sulog LTE Timing'
+  Caption = 'Timing'
   ClientHeight = 318
   ClientWidth = 1350
   Menu = MainMenu
@@ -11,34 +11,99 @@ object SuTimingForm: TSuTimingForm
   Position = poScreenCenter
   LCLVersion = '1.4.0.4'
   WindowState = wsMaximized
-  object ListBox1: TListBox
+  object PageControl1: TPageControl
     Left = 0
     Height = 318
     Top = 0
-    Width = 132
-    Align = alLeft
-    ItemHeight = 0
-    TabOrder = 0
-  end
-  object PaintBox1: TPaintBox
-    Left = 132
-    Height = 318
-    Top = 0
-    Width = 1218
+    Width = 1350
+    ActivePage = TabSheet1
     Align = alClient
-    Color = clNone
-    Font.Height = -11
-    Font.Name = 'Consolas'
-    ParentColor = False
-    ParentFont = False
-    ParentShowHint = False
-    ShowHint = True
-    OnMouseDown = PaintBox1MouseDown
-    OnMouseEnter = PaintBox1MouseEnter
-    OnMouseLeave = PaintBox1MouseLeave
-    OnMouseMove = PaintBox1MouseMove
-    OnMouseUp = PaintBox1MouseUp
-    OnMouseWheel = PaintBox1MouseWheel
+    TabIndex = 0
+    TabOrder = 0
+    object TabSheet1: TTabSheet
+      Caption = 'LTE'
+      ClientHeight = 290
+      ClientWidth = 1342
+      object ListBox1: TListBox
+        Left = 0
+        Height = 290
+        Top = 0
+        Width = 132
+        Align = alLeft
+        ItemHeight = 0
+        TabOrder = 0
+      end
+      object PaintBox1: TPaintBox
+        Left = 132
+        Height = 290
+        Top = 0
+        Width = 1210
+        Align = alClient
+        Color = clNone
+        Font.Height = -11
+        Font.Name = 'Consolas'
+        ParentColor = False
+        ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
+      end
+    end
+    object TabSheet2: TTabSheet
+      Caption = 'TD-SCDMA'
+      ClientHeight = 290
+      ClientWidth = 1342
+      object ListBox2: TListBox
+        Left = 0
+        Height = 290
+        Top = 0
+        Width = 132
+        Align = alLeft
+        ItemHeight = 0
+        TabOrder = 0
+      end
+      object PaintBox2: TPaintBox
+        Left = 132
+        Height = 290
+        Top = 0
+        Width = 1210
+        Align = alClient
+        Color = clNone
+        Font.Height = -11
+        Font.Name = 'Consolas'
+        ParentColor = False
+        ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
+      end
+    end
+    object TabSheet3: TTabSheet
+      Caption = 'Milli-Second'
+      ClientHeight = 290
+      ClientWidth = 1342
+      object ListBox3: TListBox
+        Left = 0
+        Height = 290
+        Top = 0
+        Width = 132
+        Align = alLeft
+        ItemHeight = 0
+        TabOrder = 0
+      end
+      object PaintBox3: TPaintBox
+        Left = 132
+        Height = 290
+        Top = 0
+        Width = 1210
+        Align = alClient
+        Color = clNone
+        Font.Height = -11
+        Font.Name = 'Consolas'
+        ParentColor = False
+        ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
+      end
+    end
   end
   object MainMenu: TMainMenu
     left = 160
@@ -49,6 +114,11 @@ object SuTimingForm: TSuTimingForm
         Caption = '打开... '
         ShortCut = 16463
         OnClick = MenuItem2Click
+      end
+      object MenuItem8: TMenuItem
+        Caption = 'Quick Load...'
+        ShortCut = 16465
+        OnClick = MenuItem8Click
       end
     end
     object MenuItem3: TMenuItem

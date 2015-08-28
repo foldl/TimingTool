@@ -1,4 +1,4 @@
-object SuTimingLoadingForm: TSuTimingLoadingForm
+object TimingLoadingForm: TTimingLoadingForm
   Left = 677
   Height = 140
   Top = 213

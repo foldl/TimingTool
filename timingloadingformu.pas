@@ -1,4 +1,4 @@
-unit sutimingloadingformu;
+unit timingloadingformu;
 
 {$mode objfpc}{$H+}
 
@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Windows;
+  Windows, TimingReader;
 
 type
 
@@ -15,9 +15,9 @@ type
 
   TLoadResult = (lrOK, lrCancel, lrAbort);
 
-  { TSuTimingLoadingForm }
+  { TTimingLoadingForm }
 
-  TSuTimingLoadingForm = class(TForm)
+  TTimingLoadingForm = class(TForm)
     Button1: TButton;
     Label1: TLabel;
     Label2: TLabel;
@@ -25,25 +25,26 @@ type
   private
     FLoadFun: TTextFileLoadFun;
     FCancel: Boolean;
+    function DoLoadFile(const Fn: string; Fun: TTextFileLoadFun): TLoadResult;
   public
-    function LoadFile(const Fn: string; Fun: TTextFileLoadFun): TLoadResult;
+    function LoadFile(const Fn: string; Reader: TTimingReader): Boolean;
   end;
 
 var
-  SuTimingLoadingForm: TSuTimingLoadingForm;
+  TimingLoadingForm: TTimingLoadingForm;
 
 implementation
 
 {$R *.lfm}
 
-{ TSuTimingLoadingForm }
+{ TTimingLoadingForm }
 
-procedure TSuTimingLoadingForm.Button1Click(Sender: TObject);
+procedure TTimingLoadingForm.Button1Click(Sender: TObject);
 begin
   FCancel := True;
 end;
 
-function TSuTimingLoadingForm.LoadFile(const Fn: string; Fun: TTextFileLoadFun): TLoadResult;
+function TTimingLoadingForm.DoLoadFile(const Fn: string; Fun: TTextFileLoadFun): TLoadResult;
 var
   F: TextFile;
   S: string;
@@ -86,6 +87,17 @@ begin
   Hide;
   CloseFile(F);
   if FCancel then Result := lrCancel;
+end;
+
+function TTimingLoadingForm.LoadFile(const Fn: string; Reader: TTimingReader): Boolean;
+begin
+  Reader.BeforeRead;
+  try
+    DoLoadFile(Fn, @Reader.DoLoadLine);
+    Result := True;
+  finally
+    Reader.AfterRead;
+  end;
 end;
 
 end.

@@ -1,0 +1,34 @@
+object QuickLoadForm: TQuickLoadForm
+  Left = 407
+  Height = 388
+  Top = 172
+  Width = 559
+  Caption = 'Quick Load'
+  ClientHeight = 388
+  ClientWidth = 559
+  OnClose = FormClose
+  Position = poMainFormCenter
+  LCLVersion = '1.4.0.4'
+  object Memo1: TMemo
+    Left = 0
+    Height = 354
+    Top = 0
+    Width = 559
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Font.Height = -13
+    Font.Name = 'Consolas'
+    ParentFont = False
+    ScrollBars = ssAutoBoth
+    TabOrder = 0
+  end
+  object Button1: TButton
+    Left = 240
+    Height = 25
+    Top = 360
+    Width = 75
+    Anchors = [akLeft, akBottom]
+    Caption = 'Load'
+    OnClick = Button1Click
+    TabOrder = 1
+  end
+end

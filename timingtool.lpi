@@ -39,7 +39,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="14">
+    <Units Count="17">
       <Unit0>
         <Filename Value="timingtool.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -47,7 +47,7 @@
       <Unit1>
         <Filename Value="mainformu.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="SuTimingForm"/>
+        <ComponentName Value="TimingForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainformu"/>
@@ -58,9 +58,9 @@
         <UnitName Value="LteGraph"/>
       </Unit2>
       <Unit3>
-        <Filename Value="ltetimingreader.pas"/>
+        <Filename Value="timingreader.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="LteTimingReader"/>
+        <UnitName Value="TimingReader"/>
       </Unit3>
       <Unit4>
         <Filename Value="unit1.pas"/>
@@ -92,17 +92,17 @@
         <IsPartOfProject Value="True"/>
       </Unit8>
       <Unit9>
-        <Filename Value="sutimingloadingformu.pas"/>
+        <Filename Value="timingloadingformu.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="SuTimingLoadingForm"/>
+        <ComponentName Value="TimingLoadingForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="sutimingloadingformu"/>
+        <UnitName Value="timingloadingformu"/>
       </Unit9>
       <Unit10>
-        <Filename Value="logparser_su.pas"/>
+        <Filename Value="ex_logparser_su.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="logparser_su"/>
+        <UnitName Value="ex_logparser_su"/>
       </Unit10>
       <Unit11>
         <Filename Value="klib.pas"/>
@@ -119,6 +119,24 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TdsGraph"/>
       </Unit13>
+      <Unit14>
+        <Filename Value="ex_logparser_tds.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ex_logparser_tds"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="quickloadformu.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="QuickLoadForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="quickloadformu"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="ex_sleep_check.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ex_sleep_check"/>
+      </Unit16>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
