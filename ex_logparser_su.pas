@@ -335,7 +335,7 @@ begin
   O.Free;
   with Graph do
   begin
-    FSleepEvent := TEventList.Create;
+    FSleepEvent := TLteEventList.Create;
     FSleepEvent.HasDuration := True;
     FSleepEvent.Color := 482559;
     FSleepEvent.Caption := 'Sleep';
